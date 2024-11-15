@@ -28,25 +28,35 @@ Identity Engine enables full customization of e-mail notification style and cont
 
 See [Customize email notifications > Use app context](/docs/guides/custom-email/main/#use-app-context) for more details.
 
-### App intent links
-Identity Engine changes the way Okta processes these requests. It no longer forwards requests to the centralized sign-in page (`/login/login.htm`). Instead, the app intent links location hosts the widget/sign-in experience for the app that the user is attempting to access.
+### Enhanced use of app intent links 
+Identity Engine optimizes the sign-in experience through enhancing the use of app intent links while supporting Identity Provider and Service Provider initiated sign-in flows. 
 
-Then, Identity Engine evaluates the Global Session Policy, authentication policy, and all other policies relevant to the sign-in experience. Each app intent link is responsible for hosting the sign-in experience on Identity Engine. Because of this, they share a common app intent link rate limit bucket/group similar to what exists for the centralized sign-in page on Classic Engine.
+App intent links are protocol-specific endpoints that signal the intent to access an app through initiating a sign-in flow.  
 
-App intent links are used to signal intent to access an app. These links are protocol-specific endpoints that you can use to initiate a sign-in flow to an app. Both Identity Provider and Service Provider initiated flows are supported.
-
-Example app intent link for a SAML application:
+An example SAML application app intent link:
 `http://{yourOktaDomain}/app/mysamlapp_1/{appInstanceID}/sso/saml`
 
-Before Identity Engine, these endpoints were accessible only with a session. Unauthenticated traffic was redirected to a centralized sign-in page (`/login/login.htm`) with a `fromUri` that represented the app that was originally attempted (the app intent link). This occurred before the request was assessed for rate limiting. A session was established and the request was processed.
+The sign-in processes for both the Identity Engine and Classic Engine are detailed below.
 
-The user was then redirected to the relevant app intent link through an intermediate redirect to the generic app SSO endpoint (`/app/{app}/{instanceId}/{linkName}`). The app intent link endpoint validated that the user was assigned to the app, and then enforced the app sign-on policy.
+####Identity Engine sign-in process
 
+With Identity Engine, the app intent link's location hosts the widget/sign-in experience for the specific app the user wants to access. This change eliminates user redirects and simplifies the user experience.
 
+To process the request, Identity Engine analyzes all relevant policies to the sign-in experience without forwarding to the centralized sign-in page (`/login/login.htm`). Since each app intent link is responsible for hosting the sign-in experience, they share a common app intent link rate limit bucket/group similar to the structure on the centralized Classic Engine sign-in page  (`/login/login.htm`).
 
-### Authentication policies
+####Classic Engine sign-in process
 
-Authentication policies are [security policy frameworks](https://csrc.nist.gov/pubs/sp/800/63/b/upd2/final) that allow organizations to model security outcomes for an app. These policies are shareable across applications. For example, you can automatically step up authentication to a strong non-phishable factor when elevated risk is detected. Also, Identity Engine allows you to create flexible apps that can change their authentication methods without having to alter a line of code.
+Through Classic Engine, users can only access app intent links/endpoints though an authorized session. The Classic Engine sign-in page  (`/login/login.htm`) obtains all unauthorized traffic with a `fromUri` representing the app the user attempted to access. Then, the engine assesses the request for rate limiting prior to processing the request and establishing a session.
+
+This process triggers a user redirect to the relevant app intent link through an intermediate redirect to the generic app SSO endpoint (`/app/{app}/{instanceId}/{linkName}`). The app intent link endpoint validates that the user has the correct authorization and enforces the app sign-on policy.
+
+### Flexible and adaptable authentication policies
+
+Authentication policies are [security policy frameworks](https://csrc.nist.gov/pubs/sp/800/63/b/upd2/final) that allow organizations to model security outcomes for an app. They are shareable across applications and quickly adjust based on detected risk levels. For example, you can automatically step up authentication to a strong non-phishable factor when elevated risk is detected.
+
+Authentication policies with Identity Engine are fully customizable and flexible, enabling you to create apps that can seamlessly change authentication methods without the need to alter code.
+
+See below for more resources on using authentication policies with Identity Engine:
 
 * [Configure a global session policy and authentication policies](/docs/guides/configure-signon-policy/)
 
@@ -54,7 +64,7 @@ Authentication policies are [security policy frameworks](https://csrc.nist.gov/p
 
 * [Policies (high-level concept)](/docs/concepts/policies/)
 
-### CAPTCHA
+### CAPTCHA integration
 
 CAPTCHA is a well-known strategy for mitigating attacks by bots. Identity Engine offers integrations with market-leading CAPTCHA services for registration, sign-in, and account recovery.
 
